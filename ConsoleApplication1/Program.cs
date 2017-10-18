@@ -159,7 +159,7 @@ namespace ConsoleApplication1 {
             s(endObj());
 
             //Player array
-            s(startArr("players"));
+            s(startObj("players"));
 
             int pcount = players.Length;
             int p = 0;
@@ -168,10 +168,10 @@ namespace ConsoleApplication1 {
                 Rating newRating = results[player];
 
                 //Player object
-                s(startObj());
+                s(startObj(playerIds[p] + ""));
 
                 //Id (passed in player id)
-                s(keynum("id", playerIds[p]));
+                //s(keynum("id", playerIds[p]));
 
                 //MMR (conservative rating of mu - (3 * sigma))
                 s(keynum("mmr", calculateMMR(newRating.ConservativeRating)));
@@ -187,7 +187,7 @@ namespace ConsoleApplication1 {
                 p++;
             }
 
-            s(endArr(false));
+            s(endObj(false));
 
             s(endObj(false));
 
