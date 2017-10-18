@@ -20,12 +20,9 @@ namespace ConsoleApplication1 {
 
         /*
          * Expected args:
-         * executable t1=team1size t2=team2size team1Rank team2Rank {t1+t2 space seperated list of p=players of format: p.mu p.sigma}
+         * executable t1=team1size t2=team2size team1Rank team2Rank {t1+t2 space seperated list of p=players of format: p.id p.mu p.sigma}
          *
          * team rank is just the index of their placement in the match, winner = 1, loser = 2, ties just require placements to be equal ie: 1, 1
-         *
-         * ex: string int int int int double double double double double double double double double double double double double double double double double double
-         * ex: mmr.exe 5 5 1 2 25.0 8.3 25.0 8.3 25.0 8.3 25.0 8.3 25.0 8.3 25.0 8.3 25.0 8.3 25.0 8.3 25.0 8.3 25.0 8.3
          *
          * if p.mu and p.sigma are the string "?" instead of a double, then the player is new and will be given default mmr
          */
@@ -43,7 +40,7 @@ namespace ConsoleApplication1 {
             int team1Rank = int.Parse(args[minargexpect - 2]);
             int team2Rank = int.Parse(args[minargexpect - 1]);
 
-            int totalargexpect = minargexpect + (2 * (team1Size + team2Size));
+            int totalargexpect = minargexpect + (3 * (team1Size + team2Size));
 
             if (argc != totalargexpect) {
                 Console.WriteLine("{\"error\": \"incorrect amount of arguments expect " + totalargexpect + "\"}");
@@ -57,10 +54,14 @@ namespace ConsoleApplication1 {
             //Construct players
             const string unknown = "?";
             int playerIndex = 1;
+            Dictionary<int, int> playerIds = new Dictionary<int, int>();
             Tuple<Player, Rating>[] players = new Tuple<Player, Rating>[team1Size + team2Size];
-            for (int i = minargexpect; i < totalargexpect; i += 2) {
-                string mustr = args[i];
-                string sigmastr = args[i + 1];
+            for (int i = minargexpect; i < totalargexpect; i += 3) {
+                string id = args[i];
+                string mustr = args[i + 1];
+                string sigmastr = args[i + 2];
+
+                playerIds[playerIndex - 1] = int.Parse(id);
 
                 Rating rating = null;
                 if (mustr.Equals(unknown) || sigmastr.Equals(unknown)) {
@@ -168,6 +169,9 @@ namespace ConsoleApplication1 {
 
                 //Player object
                 s(startObj());
+
+                //Id (passed in player id)
+                s(keynum("id", playerIds[p]));
 
                 //MMR (conservative rating of mu - (3 * sigma))
                 s(keynum("mmr", calculateMMR(newRating.ConservativeRating)));
