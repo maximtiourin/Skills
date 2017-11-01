@@ -28,7 +28,8 @@ namespace ConsoleApplication1 {
          */
         static void Main(string[] args) {
             int argc = args.Length;
-            int minargexpect = (isWindowsOS()) ? (4) : (5);
+            //int minargexpect = (isWindowsOS()) ? (4) : (5);
+            int minargexpect = 4;
 
             if (argc < minargexpect) {
                 Console.WriteLine("{\"error\": \"incorrect minimum amount of arguments expect " + minargexpect + "\"}");
@@ -64,10 +65,17 @@ namespace ConsoleApplication1 {
                 playerIds[playerIndex - 1] = int.Parse(id);
 
                 Rating rating = null;
-                if (mustr.Equals(unknown) || sigmastr.Equals(unknown)) {
+                if (mustr.Equals(unknown) && sigmastr.Equals(unknown)) {
+                    //No rating, use default
                     rating = gameInfo.DefaultRating;
                 }
+                else if (sigmastr.Equals(unknown)) {
+                    //Seeded mu, default sigma
+                    double mu = double.Parse(mustr);
+                    rating = new Rating(mu, DefaultInitialStandardDeviation);
+                }
                 else {
+                    //Set rating
                     double mu = double.Parse(mustr);
                     double sigma = double.Parse(sigmastr);
                     rating = new Rating(mu, sigma);
